@@ -12,6 +12,7 @@ package v1
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -424,7 +425,7 @@ func (s *sdk) launchServer() error {
 	return dcSyscall.RunServer(fmt.Sprintf("%s%s -a=%s -p=%d --log-dir=%s --v=%d --local_slots=%d "+
 		"--local_pre_slots=%d --local_exe_slots=%d --local_post_slots=%d --async_flush %s --remain_time=%d "+
 		"--use_local_cpu_percent=%d %s"+
-		"%s --res_idle_secs_for_free=%d"+
+		" %s --res_idle_secs_for_free=%d"+
 		" %s"+
 		" %s"+
 		" --send_file_memory_limit=%d"+
@@ -577,7 +578,7 @@ func (s *sdk) request(method, uri string, data []byte, wait bool) ([]byte, bool,
 	}
 
 	if resp.Code != api.ServerErrOK.Int() {
-		return nil, true, fmt.Errorf(resp.Message)
+		return nil, true, errors.New(resp.Message)
 	}
 
 	var by []byte
@@ -806,7 +807,7 @@ func (ws *workSDK) lockLocalSlot(usage dcSDK.JobUsage) error {
 	}
 
 	if r.Code != api.ServerErrOK.Int() {
-		return fmt.Errorf(r.Message)
+		return errors.New(r.Message)
 	}
 
 	return nil
